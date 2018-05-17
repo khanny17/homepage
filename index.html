@@ -2,15 +2,43 @@
 <html style="width:100%;height:100%">
 <head>
     <style>
-        .bounding-box {
-            background-image: url("https://source.unsplash.com/random/3560x1800");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover;
+        img {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
         }
     </style>
 </head>
 <body style="width:100%;height:100%;margin:0">
-    <div style="width:100%;height:100%" class="bounding-box"></div>
+    <img id="test"/>
+
+    <script>
+        // HEHEHE - we do black voodoo here! We store the image for next time
+        // in local storage, so this is super fast! (except the first time you
+        // visit, that is...
+        const url = "https://source.unsplash.com/random/3560x1800";
+        function arrayBufferToBase64(buffer) {
+            var binary = '';
+            var bytes = [].slice.call(new Uint8Array(buffer));
+
+            bytes.forEach((b) => binary += String.fromCharCode(b));
+
+            return window.btoa(binary);
+        };
+
+        //If we have a stored image, use that
+        document.getElementById("test").src = localStorage.getItem('next_img') || url;
+
+        // Get the NEXT image we want to show
+        fetch(url).then(response => {
+            response.arrayBuffer().then((buffer) => {
+                var base64Flag = 'data:image/jpeg;base64,';
+                var imageStr = arrayBufferToBase64(buffer);
+
+                localStorage.setItem('next_img', base64Flag + imageStr)
+            });
+        })
+    </script>
 </body>
 </html>
